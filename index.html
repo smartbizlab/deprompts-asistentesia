@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>De Prompts a Asistentes de IA — Masterclass</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-light:#FAFAFA;
+    --bg-dark:#111111;
+    --text-dark:#111111;
+    --text-light:#FAFAFA;
+    --accent:#C1440E;
+    --accent-hover:#A33A0C;
+    --text-secondary:#444444;
+    --text-secondary-light:#BFBFBF;
+    --label-gray:#888888;
+    --border:#CCCCCC;
+    --border-dark:#2A2A2A;
+    --surface:#F0F0F0;
+    --surface-dark:#181818;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg-light);
+    color:var(--text-dark);
+    font-family:'DM Sans',sans-serif;
+    font-weight:300;
+    font-size:17px;
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:'Playfair Display',serif;letter-spacing:-0.01em;}
+  em{font-style:italic;color:var(--accent);}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 32px;}
+  .eyebrow{
+    font-family:'DM Sans',sans-serif;
+    font-size:11px;font-weight:500;text-transform:uppercase;
+    letter-spacing:0.2em;color:var(--accent);margin-bottom:20px;
+  }
+  .eyebrow.light{color:#E8957A;}
+  a.cta{
+    display:inline-block;
+    font-family:'DM Sans',sans-serif;
+    font-size:13px;font-weight:500;text-transform:uppercase;
+    letter-spacing:0.08em;
+    background:var(--accent);color:#FAFAFA;
+    padding:16px 32px;border-radius:2px;text-decoration:none;
+    transition:background .15s ease;
+    border:none;cursor:pointer;
+  }
+  a.cta:hover{background:var(--accent-hover);}
+  a.cta:focus-visible{outline:2px solid var(--text-dark);outline-offset:3px;}
+
+  /* HERO */
+  .hero{background:var(--bg-dark);color:var(--text-light);padding:96px 0 72px;}
+  .hero h1{
+    font-size:clamp(40px,6.5vw,76px);font-weight:900;line-height:0.95;
+    margin-bottom:24px;max-width:760px;
+  }
+  .hero .subhead{
+    font-size:18px;color:var(--text-secondary-light);max-width:560px;
+    margin-bottom:40px;font-weight:300;
+  }
+  .hero-cta-row{margin-bottom:64px;}
+
+  /* TERMINAL */
+  .terminal{
+    background:#0B0B0B;border:1px solid var(--border-dark);
+    border-radius:6px;max-width:720px;overflow:hidden;
+  }
+  .terminal-bar{
+    display:flex;gap:8px;align-items:center;
+    padding:12px 16px;border-bottom:1px solid var(--border-dark);
+  }
+  .terminal-dot{width:9px;height:9px;border-radius:50%;background:#3A3A3A;}
+  .terminal-tabs{
+    display:flex;margin-left:8px;gap:18px;overflow-x:auto;white-space:nowrap;
+    font-family:'JetBrains Mono',monospace;font-size:11px;
+    letter-spacing:0.05em;color:var(--label-gray);
+    -ms-overflow-style:none;scrollbar-width:none;
+  }
+  .terminal-tabs::-webkit-scrollbar{display:none;}
+  .terminal-tabs span{cursor:pointer;padding:2px 0;border-bottom:2px solid transparent;flex-shrink:0;}
+  .terminal-tabs span.active{color:var(--accent);border-color:var(--accent);}
+  .terminal-tabs .tab-num{font-weight:500;}
+  .terminal-body{
+    font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.85;
+    padding:24px;min-height:190px;color:#D9D9D9;white-space:pre-wrap;
+    word-break:break-word;
+  }
+  .terminal-body .stage-head{
+    display:block;color:var(--label-gray);font-size:11px;letter-spacing:0.05em;
+    text-transform:uppercase;margin-bottom:10px;
+  }
+  .terminal-body .muted{color:#6B6B6B;}
+  .terminal-body .ok{color:#7FBF6A;}
+  .terminal-body .accent{color:#E8835A;}
+
+  /* SECTIONS */
+  section{padding:88px 0;}
+  .section-light{background:var(--bg-light);}
+  .section-dark{background:var(--bg-dark);color:var(--text-light);}
+  h2{font-size:clamp(28px,4vw,44px);font-weight:700;line-height:1.1;margin-bottom:28px;max-width:620px;}
+  .lede{font-size:18px;color:var(--text-secondary);max-width:560px;margin-bottom:8px;}
+  .section-dark .lede{color:var(--text-secondary-light);}
+
+  /* PROBLEMA */
+  .problem-grid{display:flex;gap:64px;flex-wrap:wrap;align-items:flex-start;}
+  .problem-text{flex:1 1 460px;}
+  .problem-text p{margin-bottom:18px;color:var(--text-secondary);font-size:17px;}
+  .problem-text strong{color:var(--text-dark);font-weight:500;}
+
+  /* LOGROS - secuencia numerada */
+  .logros-list{display:flex;flex-direction:column;border-top:1px solid var(--border-dark);margin-top:48px;}
+  .logro-item{
+    display:flex;gap:32px;padding:28px 0;
+    border-bottom:1px solid var(--border-dark);align-items:baseline;
+  }
+  .logro-num{
+    font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);
+    min-width:36px;
+  }
+  .logro-text{font-size:18px;color:var(--text-light);font-weight:400;}
+
+  /* RECIBIR - cards */
+  .recibir-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:1px;background:var(--border);margin-top:48px;
+    border:1px solid var(--border);
+  }
+  .recibir-card{background:var(--bg-light);padding:32px 28px;}
+  .recibir-card .tag{
+    font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;
+    text-transform:uppercase;letter-spacing:0.15em;color:var(--label-gray);
+    margin-bottom:14px;display:block;
+  }
+  .recibir-card h3{font-family:'DM Sans',sans-serif;font-size:18px;font-weight:500;
+    color:var(--text-dark);line-height:1.4;margin-bottom:8px;}
+  .recibir-card p{font-size:14.5px;color:var(--text-secondary);}
+  .recibir-card.main{background:var(--text-dark);grid-column:1/-1;}
+  .recibir-card.main .tag{color:#E8957A;}
+  .recibir-card.main h3{color:var(--bg-light);font-family:'Playfair Display',serif;font-size:26px;font-weight:700;}
+  .recibir-card.main p{color:var(--text-secondary-light);max-width:520px;}
+
+  /* BONO */
+  .bono-box{
+    border:1px solid var(--border-dark);padding:40px;margin-top:40px;
+    display:flex;gap:32px;align-items:flex-start;flex-wrap:wrap;
+  }
+  .bono-box .label-bono{
+    font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:13px;
+    border:1px solid var(--accent);padding:6px 12px;border-radius:2px;flex-shrink:0;
+  }
+  .bono-box p{color:var(--text-secondary-light);font-size:16px;max-width:560px;}
+
+  /* CTA FINAL */
+  .cta-final{text-align:left;}
+  .cta-final h2{color:var(--text-light);}
+  .cta-final .lede{margin-bottom:36px;}
+
+  footer{padding:32px 0;border-top:1px solid var(--border);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  footer p{font-size:13px;color:var(--label-gray);font-family:'JetBrains Mono',monospace;}
+
+  @media (max-width:640px){
+    .wrap{padding:0 20px;}
+    section{padding:56px 0;}
+    .hero{padding:48px 0 40px;}
+    .hero h1{line-height:1.04;margin-bottom:18px;}
+    .hero .subhead{font-size:16.5px;margin-bottom:28px;}
+    .hero-cta-row{margin-bottom:36px;}
+
+    a.cta{display:block;width:100%;text-align:center;padding:17px 24px;}
+
+    .terminal-tabs{gap:14px;}
+    .tab-label{display:none;}
+    .terminal-body{padding:18px;font-size:12.5px;line-height:1.75;min-height:0;}
+
+    h2{margin-bottom:20px;}
+    .lede{font-size:16px;}
+
+    .problem-grid{gap:0;}
+    .problem-text p{font-size:16px;margin-bottom:16px;}
+
+    .logros-list{margin-top:32px;}
+    .logro-item{gap:16px;padding:22px 0;align-items:flex-start;}
+    .logro-text{font-size:16.5px;}
+
+    .recibir-grid{margin-top:32px;}
+    .recibir-card{padding:24px 20px;}
+    .recibir-card.main h3{font-size:22px;}
+
+    .bono-box{padding:24px;flex-direction:column;gap:16px;margin-top:28px;}
+
+    .cta-final .lede{margin-bottom:24px;}
+
+    footer .wrap{flex-direction:column;align-items:flex-start;gap:6px;}
+  }
+  @media (max-width:380px){
+    .hero h1{font-size:34px;}
+    .terminal-tabs{gap:10px;font-size:10px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow light">MASTERCLASS PRÁCTICA</div>
+    <h1>De prompts a <em>asistentes</em> de IA</h1>
+    <p class="subhead">Vas a dejar de escribir el mismo prompt cada vez que necesitas algo. En esta masterclass construyes asistentes reutilizables — GPTs, Gems o Skills — que ya saben qué hacer cuando los activas.</p>
+    <div class="hero-cta-row">
+      <a class="cta" href="https://comunidad.rodolfobuitrago.com/courses/offers/358624e7-044a-4151-be6a-501b3676b81f">Quiero el masterclass</a>
+    </div>
+
+    <div class="terminal" id="terminal">
+      <div class="terminal-bar">
+        <div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div>
+        <div class="terminal-tabs" id="tabs">
+          <span data-stage="0" class="active"><span class="tab-num">01</span><span class="tab-label"> prompt suelto</span></span>
+          <span data-stage="1"><span class="tab-num">02</span><span class="tab-label"> estructurado</span></span>
+          <span data-stage="2"><span class="tab-num">03</span><span class="tab-label"> system prompt</span></span>
+          <span data-stage="3"><span class="tab-num">04</span><span class="tab-label"> asistente</span></span>
+        </div>
+      </div>
+      <div class="terminal-body" id="terminal-body"></div>
+    </div>
+  </div>
+</header>
+
+<section class="section-light">
+  <div class="wrap">
+    <div class="problem-grid">
+      <div class="problem-text">
+        <h2>Llevas meses usando IA. Pero sigues empezando de cero cada vez.</h2>
+        <p>Necesitas algo, escribes el prompt, buscas en conversaciones pasadas, copias, ajustas. Y terminas con el mismo resultado mediocre de la última vez.</p>
+        <p>Eso pasa porque sigues operando con <strong>prompts sueltos</strong>. Un asistente bien construido ya sabe qué hacer — tú solo lo activas, le das el input y recibes el resultado.</p>
+        <p>El salto entre una cosa y la otra no es magia ni un truco de "prompt perfecto". Es una estructura que se aprende una vez y se reutiliza siempre.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-dark">
+  <div class="wrap">
+    <div class="eyebrow">LO QUE VAS A LOGRAR</div>
+    <h2>Cuatro pasos. En orden. Sin saltos.</h2>
+    <p class="lede">Cada paso depende del anterior — así es como un prompt suelto termina siendo un asistente que usas todos los días.</p>
+    <div class="logros-list">
+      <div class="logro-item"><span class="logro-num">01</span><span class="logro-text">Convertir un prompt simple en un prompt estructurado</span></div>
+      <div class="logro-item"><span class="logro-num">02</span><span class="logro-text">Crear un system prompt funcional</span></div>
+      <div class="logro-item"><span class="logro-num">03</span><span class="logro-text">Entender cómo ese system prompt se convierte en asistente</span></div>
+      <div class="logro-item"><span class="logro-num">04</span><span class="logro-text">Organizar tu trabajo con proyectos en lugar de chats sueltos</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section-light">
+  <div class="wrap">
+    <div class="eyebrow">LO QUE VAS A RECIBIR</div>
+    <h2>No sales con teoría. Sales con el material para construir.</h2>
+    <div class="recibir-grid">
+      <div class="recibir-card main">
+        <span class="tag">Masterclass en vivo</span>
+        <h3>Paso a paso, de prompt simple a asistente reutilizable</h3>
+        <p>Vas a ver el proceso completo aplicado en tiempo real, no una explicación teórica de cómo funcionan los prompts.</p>
+      </div>
+      <div class="recibir-card">
+        <span class="tag">Plantilla</span>
+        <h3>Experto en propuestas de valor</h3>
+        <p>Asistente listo para usar como base.</p>
+      </div>
+      <div class="recibir-card">
+        <span class="tag">Plantilla</span>
+        <h3>Investigador de cliente ideal</h3>
+        <p>Asistente listo para usar como base.</p>
+      </div>
+      <div class="recibir-card">
+        <span class="tag">Plantilla</span>
+        <h3>Generador de instrucciones para proyectos</h3>
+        <p>Asistente listo para usar como base.</p>
+      </div>
+      <div class="recibir-card">
+        <span class="tag">Framework</span>
+        <h3>Plantilla de System Prompt</h3>
+        <p>La estructura que vas a reutilizar para cada asistente nuevo que construyas.</p>
+      </div>
+      <div class="recibir-card">
+        <span class="tag">Checklist</span>
+        <h3>Proceso para crear asistentes</h3>
+        <p>El método reducido a pasos verificables, para repetirlo sin depender de la memoria.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-dark">
+  <div class="wrap">
+    <div class="eyebrow">BONO ADICIONAL</div>
+    <h2>No construyes solo. Alguien revisa lo que construiste.</h2>
+    <div class="bono-box">
+      <span class="label-bono">Q&amp;A · implementación</span>
+      <p>Sesión de seguimiento donde revisamos los asistentes que construiste durante la masterclass. Traes tu trabajo, lo ajustamos juntos.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section-dark cta-final" id="registro">
+  <div class="wrap">
+    <div class="eyebrow">RESERVA TU CUPO</div>
+    <h2>Tu próximo prompt puede ser el último que escribas desde cero.</h2>
+    <p class="lede">Cupos limitados por el formato del Q&amp;A de implementación.</p>
+    <a class="cta" href="https://comunidad.rodolfobuitrago.com/courses/offers/358624e7-044a-4151-be6a-501b3676b81f">Quiero el masterclass</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>DE PROMPTS A ASISTENTES DE IA</p>
+    <p>RODOLFOBUITRAGO.COM</p>
+  </div>
+</footer>
+
+<script>
+  const stages = [
+    {
+      label: "prompt_suelto.txt",
+      html: '<span class="muted">$ escribiendo desde cero, otra vez</span>\n\n"Hazme un post de LinkedIn sobre IA para mi negocio"\n\n<span class="muted">→ resultado genérico. lo reescribes mañana.</span>'
+    },
+    {
+      label: "prompt_estructurado.txt",
+      html: '<span class="muted">$ mismo objetivo, ahora con estructura</span>\n\n<span class="accent">ROL:</span> Copywriter B2B\n<span class="accent">CONTEXTO:</span> Consultor de marketing, audiencia LATAM\n<span class="accent">TAREA:</span> Post LinkedIn sobre adopción de IA\n<span class="accent">FORMATO:</span> Hook + problema + solución + CTA'
+    },
+    {
+      label: "system_prompt.md",
+      html: '<span class="muted"># Generador de Posts LinkedIn</span>\n\nEres copywriter B2B especializado en IA aplicada.\nReglas: sin emojis, máximo 200 palabras.\nInputs esperados: tema, audiencia, objetivo.\n\n<span class="muted">→ esto ya no se reescribe. se reutiliza.</span>'
+    },
+    {
+      label: "asistente --status",
+      html: '<span class="ok">✓</span> Generador de Posts LinkedIn\n<span class="ok">✓</span> Reutilizable — sin reescribir el prompt\n<span class="ok">✓</span> Vive en tu proyecto, listo para usarse\n\n<span class="muted">$ siguiente input →</span>'
+    }
+  ];
+
+  const body = document.getElementById('terminal-body');
+  const tabs = document.querySelectorAll('#tabs span');
+  let current = 0;
+  let timer;
+
+  function render(i){
+    current = i;
+    const num = String(i + 1).padStart(2, '0');
+    body.innerHTML = `<span class="stage-head">${num} · ${stages[i].label}</span>` + stages[i].html;
+    tabs.forEach((t,idx) => t.classList.toggle('active', idx === i));
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      clearInterval(timer);
+      render(parseInt(tab.dataset.stage));
+      startAutoCycle();
+    });
+  });
+
+  function startAutoCycle(){
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduce) return;
+    timer = setInterval(() => {
+      render((current + 1) % stages.length);
+    }, 4200);
+  }
+
+  render(0);
+  startAutoCycle();
+</script>
+
+</body>
+</html>
